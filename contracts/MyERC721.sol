@@ -43,9 +43,9 @@ contract MyERC721 is ImmutableERC721Preset {
         return _tokenIdToString[tokenId];
     }
     
-    function getMostRecentTokenID() returns (uint256) {
-        return super.nextTokenId.current();
-    }
+    // function getMostRecentTokenID() returns (uint256) {
+    //     return super.nextTokenId.current();
+    // }
 }
 
 
