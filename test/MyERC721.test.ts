@@ -17,7 +17,7 @@ describe("MyERC721", function () {
       "Imaginary Immutable Iguanas", // name
       "III", // symbol
       "https://example-base-uri.com/", // baseURI
-      "https://example-contract-uri.com/", // contractURI,
+      "https://example-contract-uri.com/" // contractURI,
     );
     await contract.deployed();
 
@@ -49,30 +49,68 @@ describe("MyERC721", function () {
     const [owner, recipient] = await ethers.getSigners();
     const desc = "yayyyy";
 
-    let tokenId = 0
-    await new Promise(async res => {
-      contract.on('Transfer', (_from: any, _to: any, tokenIdOnEvent) => {
-        tokenId = Number(tokenIdOnEvent)
-        console.log(tokenId)
-        res('')
-      })
+    let tokenId = 0;
+    await new Promise(async (res) => {
+      contract.on(
+        "Transfer",
+        async (_from: any, _to: any, tokenIdOnEvent: any) => {
+          tokenId = Number(tokenIdOnEvent);
+          res("");
+          const decode = (str: string): string =>
+            Buffer.from(str, "base64").toString();
 
-      try {
-        await contract
-          .connect(owner)
-          .permissionedMintWithMetadata(recipient.address, desc, {
-            value: 1000
-          })
-      } catch (e) {
-        console.log(e)
-      }
-    })
+          const [_, data] = (await contract.getMetadataOf(tokenId)).split(
+            "base64,"
+          );
+          const json = JSON.parse(decode(data));
+          console.log("\n");
+          console.log(json);
+        }
+      );
 
-    const decode = (str: string): string =>
-      Buffer.from(str, "base64").toString();
+      const nfts = [
+        {
+          desc: "Jimmy",
+          burn: 123,
+        },
+        {
+          desc: "Bob",
+          burn: 1230,
+        },
+        {
+          desc: "Yolo",
+          burn: 1000,
+        },
+        {
+          desc: "James",
+          burn: 22,
+        },
+        {
+          desc: "Joy",
+          burn: 13,
+        },
+        {
+          desc: "Guy",
+          burn: 63,
+        },
+        {
+          desc: "Saly",
+          burn: 12,
+        },
+      ];
 
-    const [_, data] = (await contract.getMetadataOf(tokenId)).split("base64,");
-    const json = JSON.parse(decode(data));
+      nfts.forEach(async (x) => {
+        try {
+          await contract
+            .connect(owner)
+            .permissionedMintWithMetadata(recipient.address, x.desc, {
+              value: x.burn,
+            });
+        } catch (e) {
+          console.log(e);
+        }
+      });
+    });
   });
 
   it("Account without minter role should not be able to mint NFTs", async function () {
