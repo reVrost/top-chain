@@ -40,8 +40,11 @@ contract MyERC721 is ImmutableERC721Preset {
     }
 
     function  getMetadataOf(uint256 tokenId) public view  returns (string memory) {
-//        require(owner != address(0), "ERC721: address zero is not a valid owner");
         return _tokenIdToString[tokenId];
+    }
+    
+    function getMostRecentTokenID() returns (uint256) {
+        return super.nextTokenId.current();
     }
 }
 
