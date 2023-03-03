@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+// @ts-ignore
 import { MyERC721, MyERC721__factory } from "../typechain-types";
 
 async function deploy() {
